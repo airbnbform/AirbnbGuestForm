@@ -21,9 +21,10 @@ class Guestsheet(models.Model):
     
     # Guest personal information
     first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)            
     date_of_birth = models.DateField()
     nationality = models.CharField(max_length=255)
+    date_of_birth = models.DateField()
 
     # Travel document information
     travel_document = models.CharField(max_length=255)
