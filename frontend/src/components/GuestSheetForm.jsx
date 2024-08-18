@@ -11,7 +11,8 @@ import {
   Spin,
 } from "antd";
 import moment from "moment";
-//import "../styles/GuestSheetForm.css";
+import "../styles/GuestSheetForm.css";
+
 import api from "../api";
 import SignaturePad from "./SignaturePad";
 
