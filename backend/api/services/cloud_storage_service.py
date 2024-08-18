@@ -9,7 +9,7 @@ load_dotenv(dotenv_path)
 SCOPES = ['https://www.googleapis.com/auth/drive']
 PARENT_FOLDER_ID='1-lMG-tDLl1QiUjYDxXCMnkKUeNzQyYZ5'
 SERVICE_ACCOUNT_INFO = {
-    "type": "service_account",
+    "type": os.getenv("TYPE"),
     "project_id": os.getenv("PROJECT_ID"),
     "private_key_id": os.getenv("PRIVATE_KEY_ID"),
     "private_key": os.getenv("PRIVATE_KEY").replace('\\n', '\n'),
