@@ -11,10 +11,10 @@ import {
   Spin,
 } from "antd";
 import moment from "moment";
-import "../styles/GuestsheetForm.css";
-
+import "../styles/GuestSheetForm.css";
 import api from "../api";
 import SignaturePad from "./SignaturePad";
+import dayjs from "dayjs";
 
 const GuestsheetForm = () => {
   const [form] = Form.useForm(); // Instanz des Ant Design Forms
@@ -126,7 +126,7 @@ const GuestsheetForm = () => {
               { required: true, message: "Please input your date of birth!" },
             ]}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs()} />
           </Form.Item>
           <Form.Item
             name="nationality"
@@ -165,7 +165,7 @@ const GuestsheetForm = () => {
             label="Date of Issue"
             rules={[{ required: true, message: "Required!" }]}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs()} />
           </Form.Item>
           <Form.Item
             name="issuing_authority"
@@ -229,7 +229,7 @@ const GuestsheetForm = () => {
             name="traveling_with_date_of_birth"
             label="Traveling With Date of Birth"
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs()} />
           </Form.Item>
 
           {/* Guest Stay Information */}
@@ -250,24 +250,25 @@ const GuestsheetForm = () => {
             label="Date of Arrival"
             rules={[{ required: true, message: "Required!" }]}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs()} />
           </Form.Item>
           <Form.Item
             name="date_of_departure"
             label="Date of Departure"
             rules={[{ required: true, message: "Required!" }]}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs().add(45, "days")} />
           </Form.Item>
           <Form.Item
             name="actual_departure"
             label="Actual Departure"
             rules={[{ required: true, message: "Required!" }]}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker maxDate={dayjs().add(45, "days")} />
           </Form.Item>
           <Form.Item
             label="Signature"
+            name="signature"
             rules={[{ required: true, message: "Required!" }]}
           >
             <SignaturePad onSave={handleSave} />
