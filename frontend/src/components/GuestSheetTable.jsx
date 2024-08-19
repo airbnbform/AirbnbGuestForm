@@ -258,17 +258,6 @@ const GuestSheetTable = () => {
               marginTop: "20px",
             }}
           >
-            <Button
-              type="primary"
-              key="download"
-              icon={
-                <DownloadOutlined
-                  onClick={() => handleDownload(selectedGuest.id)}
-                />
-              }
-            >
-              Download
-            </Button>
             <div>
               <Button
                 key="delete"
