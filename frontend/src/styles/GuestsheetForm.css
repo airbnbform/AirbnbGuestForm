@@ -20,6 +20,13 @@
   justify-content: center;
   z-index: 1000; /* Ensure it is on top of other content */
 }
+.custom-label {
+  font-weight: bold;
+}
+.custom-asterix {
+  color: red;
+  font-weight: 300;
+}
 @media (max-width: 768px) {
   .ant-card {
     width: 100% !important; /* Versteckt den Sider auf mobilen Geräten */

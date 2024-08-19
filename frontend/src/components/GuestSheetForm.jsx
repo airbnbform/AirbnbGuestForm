@@ -266,11 +266,10 @@ const GuestsheetForm = () => {
           >
             <DatePicker maxDate={dayjs().add(45, "days")} />
           </Form.Item>
-          <Form.Item
-            label="Signature"
-            name="signature"
-            rules={[{ required: true, message: "Required!" }]}
-          >
+          <Form.Item rules={[{ required: true, message: "Required!" }]}>
+            <label className="custom-label">
+              <span className="custom-asterix">*</span> Signature
+            </label>
             <SignaturePad onSave={handleSave} />
           </Form.Item>
           <Form.Item>
