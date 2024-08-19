@@ -46,3 +46,5 @@ typing_extensions==4.12.2
 uritemplate==4.1.1
 urllib3==2.2.2
 whitenoise==6.7.0
+mysqlclient==2.2.4; python_version >= '3.8'
+python-dotenv==1.0.1; python_version >= '3.8'
