@@ -24,10 +24,8 @@ load_dotenv()
 SECRET_KEY = 'django-insecure-x+44hkc*qw8pwufoydbbxn+bh82(0z88@0burr=r3j-dds!s=-'
 
 
-DEBUG = True
+DEBUG = False
 
-# SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-x+44hkc*qw8pwufoydbbxn+bh82(0z88@0burr=r3j-dds!s=-'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
