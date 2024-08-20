@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
-const apiUrl = "https://99fc88ca-dcca-429e-9219-715399d5ecee-dev.e1-eu-north-azure.choreoapis.dev/airbnbform/backend/v1.0"
+const apiUrl = "/choreo-apis/airbnbform/backend/v1"
 
 const api = axios.create({
     baseURL: apiUrl
