@@ -15,11 +15,13 @@ import "../styles/GuestsheetForm.css";
 import api from "../api";
 import SignaturePad from "./SignaturePad";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const GuestsheetForm = () => {
   const [form] = Form.useForm(); // Instanz des Ant Design Forms
   const [signature, setSignature] = useState("");
   const [loading, setLoading] = useState(false); // State für den Ladeindikator
+  const navigate = useNavigate();
 
   const onFinish = (values) => {
     // Wird aufgerufen, wenn das Formular abgeschickt wird
@@ -56,6 +58,9 @@ const GuestsheetForm = () => {
         message.success("Entry created!");
         form.resetFields(); // Reset form after submission
         setSignature("");
+
+        // Weiterleitung zur Erfolgsmeldung
+        navigate("/success");
       })
       .catch((error) => {
         console.error("Error:", error);

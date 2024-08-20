@@ -93,6 +93,7 @@ class Guestsheet(models.Model):
             ['Last Name', self.last_name],
             ['Date of Birth', self.date_of_birth],
             ['Nationality', self.nationality],
+            ['Travel Document', self.travel_document],
             ['Document Number', self.document_number],
             ['Date of Issue', self.date_of_issue],
             ['Issuing Authority', self.issuing_authority],

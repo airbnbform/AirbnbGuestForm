@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Overview from "./pages/Overview";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import SuccessPage from "./pages/SuccessPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext"; // Importiere AuthProvider
 import "./styles/App.css";
@@ -33,6 +34,7 @@ const App = () => {
                   }
                 />
                 <Route path="/login" element={<Login />} />
+                <Route path="/success" element={<SuccessPage />} />
               </Routes>
             </Content>
           </Layout>
