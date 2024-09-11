@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import pymysql
+import dj_database_url
+
 
 pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,16 +31,12 @@ DEBUG = False
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["airbnbguestform-production.up.railway.app",
+                 "localhost", "127.0.0.1"]
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PWD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
-    }
+    "default": dj_database_url.config(default=DATABASE_URL)
 }
 
 
