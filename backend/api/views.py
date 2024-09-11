@@ -9,6 +9,7 @@ from django.http import FileResponse, Http404
 from django.conf import settings
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
+
 class IsAuthenticatedOrCreate(BasePermission):
     """
     Erlaubt nur authentifizierten Benutzern den Zugriff auf die Liste der Ressourcen.
@@ -25,6 +26,7 @@ class GuestSheetViewSet(viewsets.ModelViewSet):
     queryset = Guestsheet.objects.all()
     serializer_class = GuestInfoSerializer
     permission_classes = [IsAuthenticatedOrCreate]
+
 
 class GuestSheetPDFView(View):
     def get(self, request, filename, *args, **kwargs):

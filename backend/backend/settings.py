@@ -57,8 +57,8 @@ INSTALLED_APPS = [
     "djoser",
 ]
 
-MIDDLEWARE = [    
-    'django.middleware.security.SecurityMiddleware',    
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -89,9 +89,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
-
-    
-
 
 
 # Password validation

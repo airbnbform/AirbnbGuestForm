@@ -16,12 +16,13 @@ from .services.cloud_storage_service import upload_photo
 PDF_DIR = "pdfs"
 SIGNATURE_SCALE_FACTOR = 0.7
 
+
 class Guestsheet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
+
     # Guest personal information
     first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)            
+    last_name = models.CharField(max_length=255)
     date_of_birth = models.DateField()
     nationality = models.CharField(max_length=255)
     date_of_birth = models.DateField()
@@ -32,33 +33,36 @@ class Guestsheet(models.Model):
     date_of_issue = models.DateField()
     issuing_authority = models.CharField(max_length=255)
     issuing_country = models.CharField(max_length=255)
-    
+
     # Main domicile information
     domicile_place = models.CharField(max_length=255)
     domicile_zip_code = models.CharField(max_length=20)
     domicile_street = models.CharField(max_length=255)
     domicile_country = models.CharField(max_length=255)
-    
+
     # Traveling with
-    traveling_with_surname = models.CharField(max_length=255, blank=True, null=True)
-    traveling_with_first_name = models.CharField(max_length=255, blank=True, null=True)
+    traveling_with_surname = models.CharField(
+        max_length=255, blank=True, null=True)
+    traveling_with_first_name = models.CharField(
+        max_length=255, blank=True, null=True)
     traveling_with_date_of_birth = models.DateField(blank=True, null=True)
-    
+
     # Guest stay information
     total_guests = models.IntegerField()
     date_of_arrival = models.DateField()
     date_of_departure = models.DateField()
     actual_departure = models.DateField(blank=True, null=True)
-    
+
     # Signature
-    signature = models.TextField(blank=True, null=True)  # Signature as Base64 string
+    # Signature as Base64 string
+    signature = models.TextField(blank=True, null=True)
 
     # Other
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.last_name} {self.first_name} from {self.nationality}"
-    
+
     @staticmethod
     def base64_to_image(base64_str):
         """Convert a Base64-encoded string to a Pillow Image object."""
@@ -79,11 +83,14 @@ class Guestsheet(models.Model):
 
         doc = SimpleDocTemplate(file_path, pagesize=letter)
         styles = getSampleStyleSheet()
-        
-        title_style = ParagraphStyle(name='Title', fontSize=16, spaceAfter=12, alignment=1, fontName="Helvetica-Bold")
-        heading_style = ParagraphStyle(name='Heading', fontSize=14, spaceAfter=8, fontName="Helvetica-Bold")
-        normal_style = ParagraphStyle(name='Normal', fontSize=12, fontName="Helvetica")
-        
+
+        title_style = ParagraphStyle(
+            name='Title', fontSize=16, spaceAfter=12, alignment=1, fontName="Helvetica-Bold")
+        heading_style = ParagraphStyle(
+            name='Heading', fontSize=14, spaceAfter=8, fontName="Helvetica-Bold")
+        normal_style = ParagraphStyle(
+            name='Normal', fontSize=12, fontName="Helvetica")
+
         content = []
         content.append(Paragraph("Guest Information", title_style))
 
@@ -104,7 +111,8 @@ class Guestsheet(models.Model):
             ['Domicile Country', self.domicile_country],
             ['Traveling with Surname', self.traveling_with_surname or 'N/A'],
             ['Traveling with First Name', self.traveling_with_first_name or 'N/A'],
-            ['Traveling with Date of Birth', self.traveling_with_date_of_birth or 'N/A'],
+            ['Traveling with Date of Birth',
+                self.traveling_with_date_of_birth or 'N/A'],
             ['Total Guests', self.total_guests],
             ['Date of Arrival', self.date_of_arrival],
             ['Date of Departure', self.date_of_departure],
@@ -115,12 +123,15 @@ class Guestsheet(models.Model):
         if self.signature:
             image = self.base64_to_image(self.signature)
             if image:
-                new_size = tuple(int(dim * SIGNATURE_SCALE_FACTOR) for dim in image.size)
-                resized_image = image.resize(new_size, PilImage.Resampling.LANCZOS)
+                new_size = tuple(int(dim * SIGNATURE_SCALE_FACTOR)
+                                 for dim in image.size)
+                resized_image = image.resize(
+                    new_size, PilImage.Resampling.LANCZOS)
                 signature_img = BytesIO()
                 resized_image.save(signature_img, format="PNG")
                 signature_img.seek(0)
-                signature_img = PlatypusImage(signature_img, width=new_size[0], height=new_size[1])
+                signature_img = PlatypusImage(
+                    signature_img, width=new_size[0], height=new_size[1])
                 data.append(['Signature', signature_img])
 
         table = Table(data, colWidths=[2*inch, 4*inch])
@@ -136,7 +147,7 @@ class Guestsheet(models.Model):
         doc.build(content)
 
         return file_path
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Save object to database first
         new_file = self.generate_pdf()  # Then create PDF file

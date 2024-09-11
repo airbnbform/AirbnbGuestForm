@@ -1,52 +1,57 @@
-// src/components/GuestsheetForm.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Form,
-  Input,
-  DatePicker,
+  TextField,
   Button,
-  InputNumber,
   Card,
-  message,
-  Spin,
-} from "antd";
-import moment from "moment";
-import "../styles/GuestsheetForm.css";
+  CircularProgress,
+  Typography,
+  Grid,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import api from "../api";
 import SignaturePad from "./SignaturePad";
-import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import "dayjs/locale/de"; // Import the locale if needed
+
+// Set the date format
+const DATE_FORMAT = "YYYY-MM-DD";
 
 const GuestsheetForm = () => {
-  const [form] = Form.useForm(); // Instanz des Ant Design Forms
+  const [formValues, setFormValues] = useState({});
   const [signature, setSignature] = useState("");
-  const [loading, setLoading] = useState(false); // State für den Ladeindikator
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
-    // Wird aufgerufen, wenn das Formular abgeschickt wird
-    setLoading(true); // Ladezustand aktivieren
+  const handleChange = (field, value) => {
+    setFormValues((prevValues) => ({ ...prevValues, [field]: value }));
+  };
 
-    // Format the dates to match the Django model format
+  const onFinish = () => {
+    setLoading(true);
+
+    // Format the dates to YYYY-MM-DD
     const formattedValues = {
-      ...values,
-      date_of_birth: values.date_of_birth
-        ? values.date_of_birth.format("YYYY-MM-DD")
+      ...formValues,
+      date_of_birth: formValues.date_of_birth
+        ? dayjs(formValues.date_of_birth).format(DATE_FORMAT)
         : null,
-      date_of_issue: values.date_of_issue
-        ? values.date_of_issue.format("YYYY-MM-DD")
+      date_of_issue: formValues.date_of_issue
+        ? dayjs(formValues.date_of_issue).format(DATE_FORMAT)
         : null,
-      date_of_arrival: values.date_of_arrival
-        ? values.date_of_arrival.format("YYYY-MM-DD")
+      date_of_arrival: formValues.date_of_arrival
+        ? dayjs(formValues.date_of_arrival).format(DATE_FORMAT)
         : null,
-      date_of_departure: values.date_of_departure
-        ? values.date_of_departure.format("YYYY-MM-DD")
+      date_of_departure: formValues.date_of_departure
+        ? dayjs(formValues.date_of_departure).format(DATE_FORMAT)
         : null,
-      actual_departure: values.actual_departure
-        ? values.actual_departure.format("YYYY-MM-DD")
+      actual_departure: formValues.actual_departure
+        ? dayjs(formValues.actual_departure).format(DATE_FORMAT)
         : null,
-      traveling_with_date_of_birth: values.traveling_with_date_of_birth
-        ? values.traveling_with_date_of_birth.format("YYYY-MM-DD")
+      traveling_with_date_of_birth: formValues.traveling_with_date_of_birth
+        ? dayjs(formValues.traveling_with_date_of_birth).format(DATE_FORMAT)
         : null,
       signature,
     };
@@ -55,234 +60,404 @@ const GuestsheetForm = () => {
       .post("/api/guestsheet/", formattedValues)
       .then((response) => {
         console.log("Success:", response.data);
-        message.success("Entry created!");
-        form.resetFields(); // Reset form after submission
+        setFormValues({});
         setSignature("");
-
-        // Weiterleitung zur Erfolgsmeldung
         navigate("/success");
       })
       .catch((error) => {
         console.error("Error:", error);
-        message.error("Failed to create entry.");
+        alert("Failed to create entry.");
       })
       .finally(() => {
-        setLoading(false); // Ladezustand deaktivieren
+        setLoading(false);
       });
   };
 
   const handleSave = (dataURL) => {
-    // Verarbeite die Data-URL der Unterschrift hier
     setSignature(dataURL);
-    console.log("Unterschrift gespeichert:", dataURL);
-
-    // Optional: Sende die Data-URL an den Server oder speichere sie lokal
-    // fetch('/api/save-signature', { method: 'POST', body: JSON.stringify({ signature: dataURL }) })
+    console.log("Signature saved:", dataURL);
   };
 
   return (
-    <div className="form-wrapper">
-      <Card
-        title="Guest Information"
-        style={{ width: 800 }}
-        className="card-component"
-      >
-        {loading && (
-          <div className="loading-overlay">
-            <Spin size="large" />
-          </div>
-        )}
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{
-            date_of_birth: moment(),
-            date_of_issue: moment(),
-            date_of_arrival: moment(),
-            date_of_departure: moment(),
-            actual_departure: moment(),
-            traveling_with_date_of_birth: moment(),
+    <div
+      style={{
+        position: "relative",
+        padding: 20,
+        maxWidth: 800,
+        margin: "auto",
+      }}
+    >
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
           }}
         >
-          {/* Form Items */}
-          <Form.Item
-            name="first_name"
-            label="First Name"
-            rules={[
-              { required: true, message: "Please input your first name!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="last_name"
-            label="Last Name"
-            rules={[
-              { required: true, message: "Please input your last name!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="date_of_birth"
-            label="Date of Birth"
-            rules={[
-              { required: true, message: "Please input your date of birth!" },
-            ]}
-          >
-            <DatePicker maxDate={dayjs()} />
-          </Form.Item>
-          <Form.Item
-            name="nationality"
-            label="Nationality"
-            rules={[
-              { required: true, message: "Please input your nationality!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+          <CircularProgress />
+        </div>
+      )}
+      <Card style={{ padding: 20 }}>
+        <Typography variant="h4" gutterBottom>
+          Guest Information
+        </Typography>
 
-          {/* Travel Document Information */}
-          <Form.Item
-            name="travel_document"
-            label="Travel Document"
-            rules={[
-              { required: true, message: "Please input your travel document!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="document_number"
-            label="Document Number"
-            rules={[
-              {
-                required: true,
-                message: "Please input your travel document number!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="date_of_issue"
-            label="Date of Issue"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <DatePicker maxDate={dayjs()} />
-          </Form.Item>
-          <Form.Item
-            name="issuing_authority"
-            label="Issuing Authority"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="issuing_country"
-            label="Issuing Country"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
+        <Grid container spacing={2} direction="column">
+          {/* First Name */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="First Name"
+              required
+              value={formValues.first_name || ""}
+              onChange={(e) => handleChange("first_name", e.target.value)}
+            />
+          </Grid>
 
-          {/* Main Domicile Information */}
-          <Form.Item
-            name="domicile_place"
-            label="Domicile Place"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="domicile_zip_code"
-            label="Domicile Zip Code"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="domicile_street"
-            label="Domicile Street"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="domicile_country"
-            label="Domicile Country"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <Input />
-          </Form.Item>
+          {/* Last Name */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Last Name"
+              required
+              value={formValues.last_name || ""}
+              onChange={(e) => handleChange("last_name", e.target.value)}
+            />
+          </Grid>
 
-          {/* Traveling With */}
-          <Form.Item
-            name="traveling_with_surname"
-            label="Traveling With Surname"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="traveling_with_first_name"
-            label="Traveling With First Name"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="traveling_with_date_of_birth"
-            label="Traveling With Date of Birth"
-          >
-            <DatePicker maxDate={dayjs()} />
-          </Form.Item>
+          {/* Date of Birth */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Birth"
+                margin="normal"
+                disableFuture
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.date_of_birth
+                    ? dayjs(formValues.date_of_birth, DATE_FORMAT)
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "date_of_birth",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth required />
+                )}
+              />
+            </LocalizationProvider>
+          </Grid>
 
-          {/* Guest Stay Information */}
-          <Form.Item
-            name="total_guests"
-            label="Total Guests"
-            rules={[
-              {
-                required: true,
-                message: "Please input the total number of guests!",
-              },
-            ]}
-          >
-            <InputNumber min={1} />
-          </Form.Item>
-          <Form.Item
-            name="date_of_arrival"
-            label="Date of Arrival"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <DatePicker maxDate={dayjs()} />
-          </Form.Item>
-          <Form.Item
-            name="date_of_departure"
-            label="Date of Departure"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <DatePicker maxDate={dayjs().add(45, "days")} />
-          </Form.Item>
-          <Form.Item
-            name="actual_departure"
-            label="Actual Departure"
-            rules={[{ required: true, message: "Required!" }]}
-          >
-            <DatePicker maxDate={dayjs().add(45, "days")} />
-          </Form.Item>
-          <Form.Item rules={[{ required: true, message: "Required!" }]}>
-            <label className="custom-label">
-              <span className="custom-asterix">*</span> Signature
-            </label>
+          {/* Nationality */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Nationality"
+              required
+              value={formValues.nationality || ""}
+              onChange={(e) => handleChange("nationality", e.target.value)}
+            />
+          </Grid>
+
+          {/* Travel Document */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Travel Document"
+              required
+              value={formValues.travel_document || ""}
+              onChange={(e) => handleChange("travel_document", e.target.value)}
+            />
+          </Grid>
+
+          {/* Document Number */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Document Number"
+              required
+              value={formValues.document_number || ""}
+              onChange={(e) => handleChange("document_number", e.target.value)}
+            />
+          </Grid>
+
+          {/* Date of Issue */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Issue"
+                margin="normal"
+                disableFuture
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.date_of_issue
+                    ? dayjs(formValues.date_of_issue, DATE_FORMAT)
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "date_of_issue",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth required />
+                )}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Issuing Authority */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Issuing Authority"
+              required
+              value={formValues.issuing_authority || ""}
+              onChange={(e) =>
+                handleChange("issuing_authority", e.target.value)
+              }
+            />
+          </Grid>
+
+          {/* Issuing Country */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Issuing Country"
+              required
+              value={formValues.issuing_country || ""}
+              onChange={(e) => handleChange("issuing_country", e.target.value)}
+            />
+          </Grid>
+
+          {/* Domicile Place */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Domicile Place"
+              required
+              value={formValues.domicile_place || ""}
+              onChange={(e) => handleChange("domicile_place", e.target.value)}
+            />
+          </Grid>
+
+          {/* Domicile Zip Code */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Domicile Zip Code"
+              required
+              value={formValues.domicile_zip_code || ""}
+              onChange={(e) =>
+                handleChange("domicile_zip_code", e.target.value)
+              }
+            />
+          </Grid>
+
+          {/* Domicile Street */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Domicile Street"
+              required
+              value={formValues.domicile_street || ""}
+              onChange={(e) => handleChange("domicile_street", e.target.value)}
+            />
+          </Grid>
+
+          {/* Domicile Country */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Domicile Country"
+              required
+              value={formValues.domicile_country || ""}
+              onChange={(e) => handleChange("domicile_country", e.target.value)}
+            />
+          </Grid>
+
+          {/* Traveling With Surname */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Traveling With Surname"
+              value={formValues.traveling_with_surname || ""}
+              onChange={(e) =>
+                handleChange("traveling_with_surname", e.target.value)
+              }
+            />
+          </Grid>
+
+          {/* Traveling With First Name */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Traveling With First Name"
+              value={formValues.traveling_with_first_name || ""}
+              onChange={(e) =>
+                handleChange("traveling_with_first_name", e.target.value)
+              }
+            />
+          </Grid>
+
+          {/* Traveling With Date of Birth */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Traveling With Birthdate"
+                margin="normal"
+                disableFuture
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.traveling_with_date_of_birth
+                    ? dayjs(
+                        formValues.traveling_with_date_of_birth,
+                        DATE_FORMAT
+                      )
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "traveling_with_date_of_birth",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => <TextField {...params} fullWidth />}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Total Guests */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Total Guests"
+              type="number"
+              required
+              value={formValues.total_guests || ""}
+              onChange={(e) => handleChange("total_guests", e.target.value)}
+            />
+          </Grid>
+
+          {/* Date of Arrival */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Arrival"
+                margin="normal"
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.date_of_arrival
+                    ? dayjs(formValues.date_of_arrival, DATE_FORMAT)
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "date_of_arrival",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth required />
+                )}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Date of Departure */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Departure"
+                margin="normal"
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.date_of_departure
+                    ? dayjs(formValues.date_of_departure, DATE_FORMAT)
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "date_of_departure",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth required />
+                )}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Actual Departure */}
+          <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Actual Departure"
+                margin="normal"
+                openTo="year"
+                views={["year", "month", "day"]}
+                inputFormat={DATE_FORMAT}
+                value={
+                  formValues.actual_departure
+                    ? dayjs(formValues.actual_departure, DATE_FORMAT)
+                    : null
+                }
+                onChange={(date) =>
+                  handleChange(
+                    "actual_departure",
+                    date ? date.format(DATE_FORMAT) : null
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth required />
+                )}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Signature */}
+          <Grid item xs={12}>
+            <Typography variant="body1">
+              <span style={{ color: "red" }}>*</span> Signature
+            </Typography>
             <SignaturePad onSave={handleSave} />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" disabled={!signature}>
+          </Grid>
+
+          {/* Submit Button */}
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onFinish}
+              disabled={!signature || loading}
+            >
               Submit
             </Button>
-          </Form.Item>
-        </Form>
+          </Grid>
+        </Grid>
       </Card>
     </div>
   );
