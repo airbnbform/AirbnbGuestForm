@@ -66,7 +66,7 @@ const GuestsheetForm = () => {
       })
       .catch((error) => {
         console.error("Error:", error);
-        alert("Failed to create entry.");
+        alert("Fehler. Wurden alle Felder ausgefüllt? \n" + error);
       })
       .finally(() => {
         setLoading(false);
@@ -137,7 +137,7 @@ const GuestsheetForm = () => {
           <Grid item xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Date of Birth"
+                label="Date of Birth * "
                 margin="normal"
                 disableFuture
                 openTo="year"
@@ -198,7 +198,7 @@ const GuestsheetForm = () => {
           <Grid item xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Date of Issue"
+                label="Date of Issue *"
                 margin="normal"
                 disableFuture
                 openTo="year"
@@ -361,7 +361,7 @@ const GuestsheetForm = () => {
           <Grid item xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Date of Arrival"
+                label="Date of Arrival *"
                 margin="normal"
                 openTo="year"
                 views={["year", "month", "day"]}
@@ -388,7 +388,7 @@ const GuestsheetForm = () => {
           <Grid item xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Date of Departure"
+                label="Date of Departure *"
                 margin="normal"
                 openTo="year"
                 views={["year", "month", "day"]}

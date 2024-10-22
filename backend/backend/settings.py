@@ -33,6 +33,7 @@ DEBUG = False
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 ALLOWED_HOSTS = ["airbnbguestform-production.up.railway.app",
                  "localhost", "127.0.0.1"]
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
